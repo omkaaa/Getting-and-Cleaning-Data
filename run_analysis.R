@@ -27,6 +27,7 @@ colnames(merge_all) <- features
 # =============================================================================
 # 2. Extracts only the measurements on the mean and standard deviation for each measurement.
 # =============================================================================
+library(dplyr)
 mean_and_std <- select(merge_all, contains("mean") | contains("std") | "subjectId" | "activityId")
 
 # =============================================================================
@@ -45,5 +46,7 @@ merge_all <- merge(x=merge_all, y=activity_labels, by="activityId", all.x=TRUE)
 # 5. From the data set in step 4, creates a second, independent tidy data set with 
 # the average of each variable for each activity and each subject.
 # =============================================================================
-tidy_all <- aggregate(.~activityName+subjectId, merge_all, mean)
-write.table(tidy_all, "tidy_all.txt")
+# tidy_all <- aggregate(.~activityName.x+subjectId, merge_all, mean)
+tidy_all <- aggregate(x = merge_all, by = merge_all[c("activityId", "subjectId")], 
+                      FUN = mean, na.rm = TRUE)
+write.table(tidy_all, "tidy_all.txt", row.name=FALSE)
